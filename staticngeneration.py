@@ -2,7 +2,6 @@ import random
 import json
 
 
-
 #external to the Graph Object, there is also a function that will generate MC versions of different
 #graphs, and will have a param called trials that determines how many to generate
 
@@ -158,35 +157,78 @@ class Graph(object):
  		else:
  			return "tails"
 
- 	def removeEdges(self,k, adjlist):
+ 	def removeEdges(self,k, adjlist,dictionary):
  		#INPUT: takes an integer k, detailing how many edges to remove, and an adj list, detailing
  		#which list to remove from
 
- 		#OUTPUT: a new edge adjacency list for the chromosome
- 		try: 
- 			takeout = random.sample(self.adjacencyList, k)
- 			keptin = [i for i in self.adjacencyList if i not in takeout]
- 			return keptin, takeout
- 		except:
- 			raise Exception("You tried to remove too many edges, has to be less then "+ len(self.adjacencyList))
+ 		#OUTPUT: an updated dictionary of node degrees, new adj list, and a list of edges removed
+ 		print "k = " + str(k)
+ 		print "len of adjlist = " + str(len(adjlist))
+ 		if k < len(adjlist): 
+ 			takeout = random.sample(adjlist, k)
+ 			keptin = [i for i in adjlist if i not in takeout]
+ 			
+ 			return self.recordNodeDegrees(dictionary,keptin), keptin,takeout
+ 		else:
+ 			raise Exception("You tried to remove too many edges, has to be less then "+ str(len(self.adjacencyList)))
  	 		 
- 	
+ 	def addEdges(self,k, adjlist,dictionary):
+ 		#INPUT:  takes an integer k, detailing how many edges to add, an adj list detailing to record the changes
+ 		#and a dictionary, to choose which nodes to add an edge between, and record the result. 
+
+ 		#output: an updated dictionary of node degrees, a new adj list and a list of edges added 
+ 		#filter the dictionary for edges to add
+ 		listofonedegreenodes = [nodenum for nodenum,degreecount in dictionary.items() if degreecount == 1]
+ 		
+ 		if len(listofonedegreenodes)/2 < k:
+ 			raise Exception*("You tried to add too many edges, has to be less then " + str(len(listofonedegreenodes)/2))
+ 		else:
+ 			return self.recursiveAdd(dictionary,adjlist,listofonedegreenodes,[],k)
+ 				
+ 	def recursiveAdd(self,dictionary,adjacencyList,listtoaddfrom,edgesAdded,number):
+ 		if number == 0:
+ 			return dictionary,adjacencyList,edgesAdded
+ 		else:
+ 			toconnect = random.sample(listtoaddfrom,2)
+			node1num = toconnect[0]
+			node2num = toconnect[1]
+			if (max(node1num,node2num) %2 == 0) and (abs(node1num-node2num) == 1):
+				#i.e. if the two nodes are connected by interval edge, try again
+				return self.recursiveAdd(dictionary,adjacencyList,listtoaddfrom,edgesAdded,number)
+			else: 
+				#if not, then 
+				#remove them from the listtoaddfrom list, 
+				listtoaddfrom = [num for num in listtoaddfrom if num not in toconnect]
+				#and get the two nodes that the nodenum's point to:
+				node1 = self.NodeList[node1num-1]
+				node2 = self.NodeList[node2num-1]
+				#2) make an edge
+				newEdge = Edge(node1,node2)
+				#3) add to adj list and listaddedto
+				adjacencyList.append(newEdge)
+				edgesAdded.append(newEdge)
+				#4)increase counts in dictionary
+				dictionary[node1num] +=1
+				dictionary[node2num] +=1
+				#5) call it again w/ number - 1
+				return self.recursiveAdd(dictionary,adjacencyList,listtoaddfrom,edgesAdded,number-1)
+				
 
  	def perturbChromosome(self,perturbation):
  		#INPUT: takes perturbation: a dictionary of perturbationFunctions(remove, add): number of operations
  		#ex. {removeEdges: 4, addEdges: 3} means remove 4 edges, and add 3 edges
  		#OUTPUT: a List of H/T alternating Chromosomes
+ 		dictionary = self.NodeDegreeDict
  		newAdjlist = [edge for edge in self.adjacencyList]
+ 		edgesRemoved = []
+ 		edgesAdded = []
  		for fun, num in perturbation.items():
  			if fun == "remove":
- 				newAdjlist, edgesRemoved = self.removeEdges(num,newAdjlist)
- 			# if fun == "add":
- 			# 	newAdjlist = addEdges(num,newAdjlist)
+ 				dictionary,newAdjlist, edgesRemoved = self.removeEdges(num,newAdjlist,dictionary)
+ 			if fun == "add":
+ 				dictionary,newAdjlist,edgesAdded = self.addEdges(num,newAdjlist,dictionary)
 
- 		#construct new nodeDegreesDict on top of preprocessed NodeDegreeDict
- 		newNodeDegrees = self.recordNodeDegrees(self.PreProcessedNodeDegreeDict, newAdjlist)
- 		#run TestHeadTails to generate a list of Chromosomes
- 		return self.testHeadTails(newNodeDegrees), edgesRemoved
+ 		return self.testHeadTails(dictionary), edgesRemoved, edgesAdded
 
  	def alterChromosome(self):
 
@@ -195,7 +237,7 @@ class Graph(object):
 		#the types of mutations introduced, whether its alternating h/t after mutation, substrings of alternating h/t chromosome
 		
 		if self.errors:
-			((self.mutateStatus, self.mutateChromosome), self.edgesRemoved) = self.perturbChromosome(self.errors)
+			((self.mutateStatus, self.mutateChromosome), self.edgesRemoved, self.edgesAdded) = self.perturbChromosome(self.errors)
 		self.longestSubSeq = max(map(lambda x: len(x), self.mutateChromosome))
 
 	def printalteredChromosome(self):
@@ -205,6 +247,7 @@ class Graph(object):
 		toreturn +="Alternating H/T: " + str(self.Alternating) + "\n" 
 		toreturn += "Mutation type: " + str(self.errors.items()) + "\n" 
 		toreturn += "Edges Removed: " + self.printObjlist(self.edgesRemoved) + "\n"
+		toreturn += "Edges Added: " + self.printObjlist(self.edgesAdded) + "\n"
 		toreturn += "Alternating H/T: " + str(self.mutateStatus) + "\n" 
 		toreturn += "Mutated Chromosome: " + str(a) + "\n"
 		toreturn += "Longest Mutated H/T: " + str(self.longestSubSeq)
@@ -220,6 +263,7 @@ class Graph(object):
 		#used for doing speedy calculations on if the altered Chromosome is 
 		self.alterChromosome()
 		return self.longestSubSeq
+
 	def emitMutateStatus(self):
 		self.alterChromosome()
 		return self.mutateStatus
@@ -546,8 +590,8 @@ if __name__ == '__main__':
 
 
 	#test ability of testHeadTails to detect breaks in h/t
-	n = 10
-	m = 5
+	n = 15
+	m = 9
 	g = Graph(n)
 	g.createAdjacencyandMutation(m,3)
 	#Test 2 valid substring case
@@ -575,13 +619,21 @@ if __name__ == '__main__':
 	g = Graph(n)
 	g.createAdjacencyandMutation(m,3,remove=1)
 
-
+	print "test longest length"
 	print g.emitLongestLength()
+	
+	"expected longest length = m*2-2-numberRemoved*2"
 	print map(lambda x: g.printObjlist(x),g.mutateChromosome)
 	print map(lambda x: g.printObjlist(x),g.List)
 	
-	print g.alterChromosome()
+	g.alterChromosome()
 	print g.printalteredChromosome()
+	
+	#test us some adding edges
+	g.createAdjacencyandMutation(m,3,add=1)
+	g.alterChromosome()
+	print g.printalteredChromosome()
+
 
 
 

@@ -44,12 +44,15 @@ Edge-adding:
 	Do all of the plumbing that allows people to specify removal
 
 **Since addEdges will operate easiest by taking a nodeDegreeDict, filtering all the nodes that have degree 1, and then randomly selecting 2*k from it, and then adding it into the nodeDegreeDict, 
-
-refactored the code so that recordNodeDegrees is called inside of removeEdges, and removeEdges now returns a 
+I refactored the code so that recordNodeDegrees is called inside of removeEdges, and removeEdges now returns a dictionary as well as the adj edge list
 
 	Future: Sequential edge additon/removal??
 
 Set up github repository and git on both personal computer and file system
  
+?? A question - so in terms of adding edges, I just made a list of all possible edges, shuffled it once, and then draw from it two at a time without replacement. Is that okay? is there a difference between that and reshuffling each time? 
+
+To prevent drawing nodes that are on the same segment, I will randomly draw two, compare to see if the bigger one is even AND 1 more then the smaller one, in which case they are adjacent and I throw it back and redraw. If these conditions are not satisfied, then I will get the nodes that the nodenums correspond to, and 
+
 
 
