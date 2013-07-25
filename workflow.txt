@@ -1,0 +1,55 @@
+- create H/T test 
+- 		make a dictionary of all nodes - for every node that appears in a adj edge list or interval list, 
+		add 1 to its dict score. have a score be the degree of every node
+
+- 12:36 pm July 18 - Simulation is done and running (theoretically perfectly)
+	has ability to generate 'correct alternating h/t seq in option 2 or option3'
+- going to work on removing edges from graph, and analyzing: 
+	longest alternating h/t seq
+	- define a function that removes k random edges from the graph [Done]
+	- define a function that counts maximum number of alternating h/t seq (builds a list of list#, length) [In progress]
+
+	1) create a function that copies adjacency list, removes k Edges, uses recordNodeDegrees to rebuilt a nodeDegreeDict, [Done]
+
+	2) extend testHeadTail to return: 1) Alternating (T/F value of whether a given NodeDegreeDict represents an alternating H/T seq), 2) A list of Alternating Sub-Sequences 
+		so if Alternating = T, AltList = [Seq]
+		so if Alternating = F, AltList = [SubSeq1, SubSeq2, ]
+
+	3) test function 2)
+
+
+7/23 - 
+	Finished building simulation, ran simulations of removing one edge, derived correct percentage of alternating H/T Seq (1/(m-2))
+	Timed simulation code, found 1) that sum on numpy arrays was really slow, converted to numpy.sum, 
+								 2) that instantiating nodes and recording node degrees was also really slow. Since we find that the results of the simulation is independent of n, we change the simulation code so that n is set in the beginning, and m and edgesRemoved are passed in after the fact. This means that Nodes will only be initiated once. 
+
+	Documentation: 
+		staticgeneration.py - Graph makes a new base template with n segments, different versions of adjacencies are added on top of the structure
+
+Run the simulation with fixed n, and on different mutations
+
+7/24 
+	Changed code so that now interconnections are randomly chosen from h/t, t/t, h/h, t/t [Done]
+	created log plot of data [done]
+	used screen to run a 5000 trial run on micmacs [Done]
+	Ran simulations of 5000 trials for one edge removal + multiple edge removal [Done]
+	Generate simulations of ratio of longest H/T seq plotted to different m
+		for single edge removal
+		for multiple edge removal [Done - saved graph- interesting finding, ratio seems constant (change very little) w/r/t m] 
+	Now: write extention in generation that allows us to add edges 
+
+Edge-adding: 
+	take the dictionary of node degrees, randomly select two nodes from it with degree 1 without replacement, and add an edge connecting them to the edgeAdjacencyList. 
+	Recalculate node Adjacencies, [update node Degree Dict]
+	Do all of the plumbing that allows people to specify removal
+
+**Since addEdges will operate easiest by taking a nodeDegreeDict, filtering all the nodes that have degree 1, and then randomly selecting 2*k from it, and then adding it into the nodeDegreeDict, 
+
+refactored the code so that recordNodeDegrees is called inside of removeEdges, and removeEdges now returns a 
+
+	Future: Sequential edge additon/removal??
+
+Set up github repository and git on both personal computer and file system
+ 
+
+
