@@ -162,13 +162,11 @@ class Graph(object):
  		#which list to remove from
 
  		#OUTPUT: an updated dictionary of node degrees, new adj list, and a list of edges removed
- 		print "k = " + str(k)
- 		print "len of adjlist = " + str(len(adjlist))
  		if k < len(adjlist): 
  			takeout = random.sample(adjlist, k)
  			keptin = [i for i in adjlist if i not in takeout]
  			
- 			return self.recordNodeDegrees(dictionary,keptin), keptin,takeout
+ 			return self.recordNodeDegrees(self.preProcessIntervalList(),keptin), keptin,takeout
  		else:
  			raise Exception("You tried to remove too many edges, has to be less then "+ str(len(self.adjacencyList)))
  	 		 
@@ -218,7 +216,8 @@ class Graph(object):
  		#INPUT: takes perturbation: a dictionary of perturbationFunctions(remove, add): number of operations
  		#ex. {removeEdges: 4, addEdges: 3} means remove 4 edges, and add 3 edges
  		#OUTPUT: a List of H/T alternating Chromosomes
- 		dictionary = self.NodeDegreeDict
+ 		dictionary = self.NodeDegreeDict.copy()
+ 		
  		newAdjlist = [edge for edge in self.adjacencyList]
  		edgesRemoved = []
  		edgesAdded = []
@@ -227,7 +226,7 @@ class Graph(object):
  				dictionary,newAdjlist, edgesRemoved = self.removeEdges(num,newAdjlist,dictionary)
  			if fun == "add":
  				dictionary,newAdjlist,edgesAdded = self.addEdges(num,newAdjlist,dictionary)
-
+ 		
  		return self.testHeadTails(dictionary), edgesRemoved, edgesAdded
 
  	def alterChromosome(self):
@@ -628,7 +627,7 @@ if __name__ == '__main__':
 	
 	g.alterChromosome()
 	print g.printalteredChromosome()
-	
+	print 
 	#test us some adding edges
 	g.createAdjacencyandMutation(m,3,add=1)
 	g.alterChromosome()

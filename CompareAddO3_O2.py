@@ -28,23 +28,31 @@ def setaxis(logoption=False):
     
 
 #display results from multiple error removals
-logoption = True
+logoption = False
 option= 2
 name = 'option%sDifErrorsAdd' %(option)
 ab = pickle.load(open(name,'rb'))
 
 a = safe_ln(ab,logoption)
 
-
 xvals = np.arange(0.,len(a[0]))
 
-fig = plt.figure(2)
-fig, axes = plt.subplots(nrows=2, ncols=1)
-fig.tight_layout()
+fig = plt.figure(1)
+
 ax1=fig.add_subplot(211)
-for i in xrange(0,a.shape[0]):
-	ax1.plot(xvals,a[i],label=("%s mutations" %(i)))
-# plt.axis(setaxis(logoption))
+ax1.plot(xvals,a[2],label=("%s mutations-Option2" %(2)))
+ax1.plot(xvals,a[3],label=("%s mutations-Option2" %(3)))
+ax1.plot(xvals,a[4],label=("%s mutations-Option2" %(4)))
+
+option= 3
+name = 'option%sDifErrorsAdd' %(option)
+ab = pickle.load(open(name,'rb'))
+a = safe_ln(ab,logoption)
+
+ax1.plot(xvals,a[1],label=("%s mutations-Option3" %(1)))
+ax1.plot(xvals,a[2],label=("%s mutations-Option3" %(2)))
+ax1.plot(xvals,a[3],label=("%s mutations-Option3" %(3)))
+
 plt.ylabel('log prob of getting valid alternating h/t CS')
 plt.xlabel('m values')
 plt.title(name + ': relation between m and alternating H/T CS after adding multiple edge')
@@ -56,27 +64,5 @@ ax1.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 # Put a legend to the right of the current axis
 ax1.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
-
-option= 3
-name = 'option%sDifErrorsAdd' %(option)
-
-ab = pickle.load(open(name,'rb'))
-
-a = safe_ln(ab,logoption)
-
-
-ax2=fig.add_subplot(212)
-for i in xrange(0,a.shape[0]):
-	ax2.plot(xvals,a[i],label=("%s mutations" %(i)))
-# plt.axis(setaxis(logoption))
-plt.ylabel('log prob of getting valid alternating h/t CS')
-plt.xlabel('m values')
-plt.title(name + ': relation between m and alternating H/T CS after adding multiple edge')
-
-# Shink current axis by 20%
-box = ax2.get_position()
-ax2.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-# Put a legend to the right of the current axis
-ax2.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 plt.show()

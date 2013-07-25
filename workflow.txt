@@ -56,7 +56,11 @@ To prevent drawing nodes that are on the same segment, I will randomly draw two,
 
 Got addEdges working - generated 10 trials, going to run on supercomputer for 5000 trials and go to bed.
 
+running simulations on 9392.pts-3.micmacs
 
 
+
+-------------
+Compare adding 2 edges in option 2 and adding 1 edge in option 3
 
 
