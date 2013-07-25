@@ -33,7 +33,7 @@ if __name__ == '__main__':
 	r_num = 10
 	option = 2
 	storage  = np.zeros(r_num*m_num).reshape(r_num,m_num)
-	trialnum = 10
+	trialnum = 5000
 	filename = "option%sDifErrorsAdd" %(option)
 	genTrials(n_num,m_num,r_num,storage,trialnum,filename,option)
 	option = 3

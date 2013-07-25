@@ -54,5 +54,9 @@ Set up github repository and git on both personal computer and file system
 
 To prevent drawing nodes that are on the same segment, I will randomly draw two, compare to see if the bigger one is even AND 1 more then the smaller one, in which case they are adjacent and I throw it back and redraw. If these conditions are not satisfied, then I will get the nodes that the nodenums correspond to, and 
 
+Got addEdges working - generated 10 trials, going to run on supercomputer for 5000 trials and go to bed.
+
+
+
 
 
